@@ -1,0 +1,23 @@
+% Ejemplo muy sencillo con car‡cter didactico
+ 
+@relation Vinos
+
+% Definicion de los atributos empleados
+
+@attribute Olor {Suave,Profundo}
+@attribute Sabor {Tierra,Afrutado,Acido}
+@attribute Color {Palido,Brillante}
+
+% Atributo objetivo
+@attribute Tipo {Rioja,Ribera}
+
+% Listado de datos
+@data
+Suave,Tierra,Palido,Rioja
+Profundo,Tierra,Brillante,Ribera
+Profundo,Afrutado,Palido,Rioja
+Suave,Acido,Palido,Ribera
+Profundo,Acido,Palido,Ribera
+Profundo,Tierra,Palido,Rioja
+Profundo,Acido,Brillante,Ribera
+Suave,Tierra,Brillante,Ribera
