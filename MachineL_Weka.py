@@ -3,7 +3,7 @@ from scipy.io import arff
 from sklearn.linear_model import LinearRegression
 from sys import exit
 
-arff_file = arff.loadarff('./house.arff')
+arff_file = arff.loadarff('./ML/house.arff')
 
 house = pd.DataFrame(arff_file[0])
 
@@ -22,7 +22,7 @@ print(lin_reg_model.intercept_)
 
 exit()
 
-arff.file = arff.loadarff('./myhouse.arff')
+arff.file = arff.loadarff('./ML/myhouse.arff')
 
 myhouse = pd.DataFrame(arff_file[0])
 
