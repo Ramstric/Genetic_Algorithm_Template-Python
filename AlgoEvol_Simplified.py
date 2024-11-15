@@ -12,7 +12,7 @@ def load_file(file_name):
     return data
 
 
-data = load_file("./Evol/Datos3.txt")
+data = load_file("./Evol/Datos1.txt")
 
 # Read number of labels
 n = int(data[0])
@@ -138,7 +138,7 @@ print(f"\nOffsprings: \n{offsprings}")
 def apply_mutations(generation):
     gen_wt_mutations = []
     for path in generation:
-        if np.random.randint(0, 1000) < 9:
+        if np.random.randint(0, 1000) < 90:
             index1, index2 = np.random.randint(1, len(path) - 1), np.random.randint(1, len(path) - 1)
             path[index1], path[index2] = path[index2], path[index1]
         gen_wt_mutations.append(path)
