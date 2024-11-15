@@ -1,4 +1,4 @@
-47
+[Num Ciudades] = 47
 Albacete
 Alicante
 Almeria
@@ -93,14 +93,27 @@ Zaragoza
 602 739 914 357 650 530 66 114 561 1014 574 541 751 549 518 630 785 352 919 256 686 315 374 86 451 351 895 752 561 340 200 93 663 351 118 174 311 825 191 489 422 422 576 236 0 332 258 
 499 670 811 159 361 759 376 218 272 661 665 415 616 411 415 859 682 306 595 535 583 135 603 333 313 248 792 649 284 253 143 421 386 62 450 344 182 536 306 694 537 296 600 96 332 0 463 
 423 498 758 418 726 296 324 287 622 988 283 515 725 833 334 396 759 267 957 72 660 488 140 172 735 325 869 539 731 604 373 175 833 482 268 397 354 863 157 231 181 396 326 367 258 463 0 
-6
-Madrid
-Barcelona
-Santander
-Palencia
+[Num Visitas] = 19
+Valencia
+Segovia
+Soria
+Vitoria
+Sevilla
 Huesca
-Tarragona
-10
-250
-0.7
-0.05
+Valladolid
+Zamora
+Avila
+Zaragoza
+Bilbao
+Santander
+Oviedo
+Orense
+Salamanca
+Badajoz
+Huelva
+Granada
+Toledo
+[Tamanio Poblacion] = 200
+[Num Generaciones] = 1500
+[ProbInversion] = 0.75
+[ProbIntercambio] = 0.01
