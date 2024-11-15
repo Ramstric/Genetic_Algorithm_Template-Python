@@ -1,7 +1,4 @@
-from os import system
-import time
 import numpy as np
-
 
 # The basic flow of a genetic algorithm is as follows:
 # 1. Initialize the population (generation zero)
@@ -16,7 +13,7 @@ import numpy as np
 # No -> Loop again
 
 
-class individual:
+class Individual:
     def __init__(self, chromosome, mutation_rate):
         self.chromosome = chromosome
         self.fitness = 0
@@ -29,7 +26,7 @@ class individual:
         return self.__str__()
 
 
-class population:
+class Population:
     def __init__(self, gene_pool, population_size, fitness_function, crossover_rate=0.0, mutation_rate=0.0):
         self.cross_over_rate = crossover_rate
 
@@ -37,7 +34,7 @@ class population:
         for i in range(population_size):
             chromosome = gene_pool.copy()
             np.random.shuffle(chromosome)
-            self.individuals.append(individual(chromosome, mutation_rate))
+            self.individuals.append(Individual(chromosome, mutation_rate))
 
         self.fitness_function = fitness_function
         self.best_individual = None
@@ -61,9 +58,7 @@ class population:
         chromosome_b = parent_b.chromosome
 
         offspring_chromosome = []
-        # start = random.randint(0, len(parent_a) - 1)
         start = np.random.randint(0, len(chromosome_a) - 1)
-        # finish = random.randint(start, len(parent_a))
         finish = np.random.randint(start, len(chromosome_a))
         sub_path_from_a = chromosome_a[start:finish]
         remaining_path_from_b = list([item for item in chromosome_b if item not in sub_path_from_a])
@@ -81,8 +76,8 @@ class population:
             if np.random.randint(0, 1) < self.cross_over_rate:
                 parent_a, parent_b = self.individuals[i], self.individuals[i + midway]
                 for _ in range(2):
-                    offsprings.append(individual(self.create_offspring(parent_a, parent_b), parent_a.mutation_rate))
-                    offsprings.append(individual(self.create_offspring(parent_b, parent_a), parent_b.mutation_rate))
+                    offsprings.append(Individual(self.create_offspring(parent_a, parent_b), parent_a.mutation_rate))
+                    offsprings.append(Individual(self.create_offspring(parent_b, parent_a), parent_b.mutation_rate))
 
         self.individuals = offsprings
 
