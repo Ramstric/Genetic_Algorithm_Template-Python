@@ -12,7 +12,7 @@ def load_file(file_name):
     return data
 
 
-data = load_file("./Evol/Datos1.txt")
+data = load_file("./Evol/Datos2.txt")
 
 # Read number of labels
 n = int(data[0])
