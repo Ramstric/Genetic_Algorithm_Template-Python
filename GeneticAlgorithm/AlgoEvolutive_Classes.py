@@ -53,8 +53,8 @@ class Population:
     def fitness_evaluation(self, *args):
         fitness_each_individual = self.fitness_function(self.individuals, *args)
 
-        for individual in self.individuals:
-            individual.fitness = fitness_each_individual.pop(0)
+        #for individual in self.individuals:
+        #    individual.fitness = fitness_each_individual.pop(0)
 
         try:
             self.best_individual = min(self.individuals, key=lambda individual: individual.fitness)
@@ -102,10 +102,9 @@ class Population:
         for individual in self.individuals:
             path = individual.chromosome
 
-            if np.random.randint(0, 1000) < individual.mutation_rate:
-                index1, index2 = np.random.randint(1, len(path) - 1), np.random.randint(1, len(path) - 1)
+            if np.random.randint(0, 100) < individual.mutation_rate:
+                index1, index2 = np.random.randint(0, len(path)), np.random.randint(0, len(path))
                 path[index1], path[index2] = path[index2], path[index1]
-
 
     def evolve(self, *args):
         self.generations += 1

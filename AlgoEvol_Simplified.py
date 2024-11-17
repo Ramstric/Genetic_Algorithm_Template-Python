@@ -12,7 +12,7 @@ def load_file(file_name):
     return data
 
 
-data = load_file("./Evol/Datos2.txt")
+data = load_file("./Evol/DatosCustom.txt")
 
 # Read number of labels
 n = int(data[0])
@@ -52,6 +52,10 @@ print(
     f"\nPopulation size: {population_size} \nGenerations: {generations} \nInversion rate: {crossover_rate} \nMutation rate: {mutation_rate}")
 
 
+
+
+
+
 # Initialize random population, by shuffling the labels to visit but keeping the first element fixed
 def initialize_population():
     population = []
@@ -82,7 +86,7 @@ def total_distance(individual, distances):
     total = 0
     for i in range(len(individual) - 1):
         total += distances[labels_dict[individual[i]]][labels_dict[individual[i + 1]]]
-    total += distances[labels_dict[individual[-1]]][labels_dict[individual[0]]]
+    #total += distances[labels_dict[individual[-1]]][labels_dict[individual[0]]]
     return total
 
 

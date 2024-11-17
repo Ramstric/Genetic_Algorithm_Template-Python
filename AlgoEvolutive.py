@@ -9,13 +9,14 @@ def total_distance(individuals, dist, labels_dict):
     for individual in individuals:
 
         # Start the route from Madrid
-        total = dist[labels_dict["Madrid"]][labels_dict[individual.chromosome[0]]]
+        total = dist[labels_dict["C0"]][labels_dict[individual.chromosome[0]]]
+        #total = 0
 
         for i in range(len(individual.chromosome) - 1):
             total += dist[labels_dict[individual.chromosome[i]]][labels_dict[individual.chromosome[i + 1]]]
 
         # End back in Madrid
-        total += dist[labels_dict[individual.chromosome[-1]]][labels_dict["Madrid"]]
+        total += dist[labels_dict[individual.chromosome[-1]]][labels_dict["C0"]]
 
         individual.fitness = total
 
@@ -57,26 +58,28 @@ def read_data(file_name):
     return _distances, _city_to_index, _cities_to_visit, _population_size, _generations, _crossover_rate, _mutation_rate
 
 
-distances, city_to_index, cities_to_visit, population_size, generations, crossover_rate, mutation_rate = read_data("./Evol/Datos2.txt")
+distances, city_to_index, cities_to_visit, population_size, generations, crossover_rate, mutation_rate = read_data("./Evol/DatosCustom.txt")
 
 # Initialize population
-poblacion = Population(cities_to_visit, population_size, total_distance, mutation_rate=90, crossover_rate=100)
+poblacion = Population(cities_to_visit, population_size, total_distance, mutation_rate=30, crossover_rate=100)
 poblacion.fitness_evaluation(distances, city_to_index)
 
 poblacion.show_population = False
 
+"""
 # Continue evolving
-#while True:
-#    _ = system('cls')
-#    print(poblacion)
-#    poblacion.evolve(distances, city_to_index)
+while True:
+    _ = system('cls')
+    print(poblacion)
+    poblacion.evolve(distances, city_to_index)
+"""
 
-gen_max = 1000
+gen_max = 500
 while gen_max >= 0:
     poblacion.evolve(distances, city_to_index)
     gen_max -= 1
 
     if gen_max == 0:
         print(poblacion)
-        gen_max = 1000
+        gen_max = 500
 
