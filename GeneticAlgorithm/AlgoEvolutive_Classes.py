@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # The basic flow of a genetic algorithm is as follows:
 # 1. Initialize the population (generation zero)
 # 2. Evaluate the population (calculate the fitness of each individual)
@@ -19,18 +20,19 @@ class Individual:
         self.fitness = 0
         self.mutation_rate = mutation_rate
 
+    # Método auxiliar para poder imprimir en consola al Individuo
+    #   i.e. print(Individuo)
     def __str__(self):
         return f"\nFitness: {self.fitness} - Individual: {self.chromosome}"
 
+    # Método auxiliar para pdoer imprimir una lista de Individuos
+    #   i.e. print( [Individuo_1, Individuo_2, Individuo_3, ...] )
     def __repr__(self):
         return self.__str__()
 
 
 class Population:
     def __init__(self, gene_pool, population_size, fitness_function, crossover_rate=0.0, mutation_rate=0.0):
-        self.generations = 0
-        self.cross_over_rate = crossover_rate
-
         self.individuals = []
 
         # Initialize a random population
@@ -39,11 +41,16 @@ class Population:
             np.random.shuffle(chromosome)
             self.individuals.append(Individual(chromosome, mutation_rate))
 
+        self.generations = 0
+        self.cross_over_rate = crossover_rate
+
         self.fitness_function = fitness_function
         self.best_individual = None
 
         self.show_population = True
 
+    # Método auxiliar para poder imprimir en consola la Poblacion
+    #   i.e. print(Population)
     def __str__(self):
         if self.show_population:
             return "\nGenerations: " + str(self.generations) + "".join([str(individual) for individual in self.individuals]) + f"\n\nBest individual: {self.best_individual}\n"
@@ -51,21 +58,24 @@ class Population:
             return f"\nGeneration {self.generations} best individual {self.best_individual}\n"
 
     def fitness_evaluation(self, *args):
-        fitness_each_individual = self.fitness_function(self.individuals, *args)
 
-        #for individual in self.individuals:
-        #    individual.fitness = fitness_each_individual.pop(0)
+        # Evaluar a cada individuo con los parámetros adicionales '*args'
+        for individual in self.individuals:
+            individual.fitness = self.fitness_function(individual.chromosome, *args)
 
-        try:
-            self.best_individual = min(self.individuals, key=lambda individual: individual.fitness)
-        except ValueError:
-            pass
-
-    def selection(self, amount_of_survivors):
+        # Ordenar a los individuos en base al puntaje de optimización, de menor a mayor.
         self.individuals = sorted(self.individuals, key=lambda individual: individual.fitness)
+
+        # Encontrar al individuo con el mejor puntaje de optimización
+        self.best_individual = self.individuals[0]
+
+    def selection(self, amount_of_survivors, *args):
+        self.fitness_evaluation(*args)
+
+        # Seleccionar hasta n Individuos según indique 'amount_of_survivors'
         self.individuals = self.individuals[:amount_of_survivors]
 
-    def create_offspring(self, parent_a, parent_b):
+    def crossover_method_basic(self, parent_a, parent_b):
         chromosome_a = parent_a.chromosome
         chromosome_b = parent_b.chromosome
 
@@ -82,7 +92,59 @@ class Population:
                 offspring_chromosome.append(sub_path_from_a.pop(0))
             else:
                 offspring_chromosome.append(remaining_path_from_b.pop(0))
-        return offspring_chromosome
+
+        return Individual(offspring_chromosome, parent_a.mutation_rate)
+
+    def crossover_method_PMX(self, parent_a, parent_b):
+        # Primero se recortan los cromosomas de los padres
+        chromosome_a = parent_a.chromosome
+        chromosome_b = parent_b.chromosome
+
+        start = np.random.randint(0, len(chromosome_a) - 2)
+        finish = np.random.randint(start + 1, len(chromosome_a))
+
+        offspring_a = [chromosome_a[:start], chromosome_b[start:finish], chromosome_a[finish:]]
+        offspring_b = [chromosome_b[:start], chromosome_a[start:finish], chromosome_b[finish:]]
+
+        # Para legalizar los cromosomas de los hijos...
+
+        # Primero se hace un hashmap de los valores centrales de los cromosomas
+        recursive_search_dict = dict()
+        for i in range(len(offspring_a[1])):
+            recursive_search_dict[offspring_a[1][i]] = offspring_b[1][i]
+
+        # Con una busqueda recursiva, se arregla el hashmap
+        mapping_dict_1 = dict()
+        mapping_dict_2 = dict()
+
+        for key in recursive_search_dict:
+            if key == recursive_search_dict[key]:
+                continue
+
+            if key in offspring_a[0] or key in offspring_a[2]:
+                start_key = key
+                end_key = recursive_search(start_key, recursive_search_dict)
+                mapping_dict_1[end_key] = start_key
+                mapping_dict_2[start_key] = end_key
+
+        # Se remplazan las variables en los extremos de los cromosomas
+        for i in range(len(offspring_a[0])):
+            if offspring_a[0][i] in mapping_dict_2:
+                offspring_a[0][i] = mapping_dict_2[offspring_a[0][i]]
+            if offspring_b[0][i] in mapping_dict_1:
+                offspring_b[0][i] = mapping_dict_1[offspring_b[0][i]]
+
+        for i in range(len(offspring_a[2])):
+            if offspring_a[2][i] in mapping_dict_2:
+                offspring_a[2][i] = mapping_dict_2[offspring_a[2][i]]
+            if offspring_b[2][i] in mapping_dict_1:
+                offspring_b[2][i] = mapping_dict_1[offspring_b[2][i]]
+
+        # Se unen los cromosomas recortados
+        offspring_a = [item for sublist in offspring_a for item in sublist]
+        offspring_b = [item for sublist in offspring_b for item in sublist]
+
+        return Individual(offspring_a, parent_a.mutation_rate), Individual(offspring_b, parent_b.mutation_rate)
 
     def crossover(self):
         offsprings = []
@@ -92,23 +154,28 @@ class Population:
             if np.random.randint(0, 100) < self.cross_over_rate:
                 parent_a, parent_b = self.individuals[i], self.individuals[i + midway]
 
-                for _ in range(2):
-                    offsprings.append(Individual(self.create_offspring(parent_a, parent_b), parent_a.mutation_rate))
-                    offsprings.append(Individual(self.create_offspring(parent_b, parent_a), parent_b.mutation_rate))
+                offsprings.extend(self.crossover_method_PMX(parent_a, parent_b))
 
-        self.individuals = offsprings
+        self.individuals.extend(offsprings)
 
     def mutate(self):
-        for individual in self.individuals:
-            path = individual.chromosome
+        for i in range(1, len(self.individuals)):
 
-            if np.random.randint(0, 100) < individual.mutation_rate:
+            path = self.individuals[i].chromosome
+
+            if np.random.randint(0, 100) < self.individuals[i].mutation_rate:
                 index1, index2 = np.random.randint(0, len(path)), np.random.randint(0, len(path))
-                path[index1], path[index2] = path[index2], path[index1]
+                self.individuals[i].chromosome[index1], self.individuals[i].chromosome[index2] = self.individuals[i].chromosome[index2], self.individuals[i].chromosome[index1]
 
     def evolve(self, *args):
         self.generations += 1
-        self.selection(len(self.individuals) // 2)
+        self.selection(len(self.individuals) // 2, *args)
         self.crossover()
         self.mutate()
         self.fitness_evaluation(*args)
+
+
+def recursive_search(key, mapping_dict):
+    if key in mapping_dict:
+        return recursive_search(mapping_dict[key], mapping_dict)
+    return key
